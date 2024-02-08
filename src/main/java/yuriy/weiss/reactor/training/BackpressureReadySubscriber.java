@@ -18,7 +18,7 @@ public class BackpressureReadySubscriber extends BaseSubscriber<Object> {
     public void hookOnNext( Object value ) {
         ProcessingMessage message = ( ProcessingMessage ) value;
         log.info( "start message processing: {}", message );
-        // ThreadUtils.sleep( message.processingTime() );
+        ThreadUtils.sleep( message.processingTime() );
         log.info( "processing finished: {}", message );
         request( 1 );
     }

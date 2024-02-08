@@ -25,14 +25,11 @@ public class MultithreadingFlux {
                 .map( i ->
                         new ProcessingMessage( i, UUID.randomUUID().toString(),
                                 ThreadUtils.nextGaussian( AVG_PROCESSING_TIME ) ) );
-        flux.subscribe( o -> log.info( "processing {}", o ) );
-
-        /*
-        Flux.range( 0, 1000 )
-                .parallel( 10 )
-                .runOn( Schedulers.parallel() )
-                .log()
-                .subscribe( i -> System.out.println( "got object " + i ) );
-        */
+        // flux.subscribe( o -> log.info( "processing {}", o ) );
+        BackpressureReadySubscriber[] subscribers = new BackpressureReadySubscriber[32];
+        for ( int i = 0; i < 32; i++ ) {
+            subscribers[i] = new BackpressureReadySubscriber();
+        }
+        flux.subscribe( subscribers );
     }
 }

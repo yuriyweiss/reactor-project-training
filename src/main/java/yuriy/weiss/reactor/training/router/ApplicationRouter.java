@@ -9,6 +9,7 @@ import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
+import yuriy.weiss.reactor.training.jackson.JacksonTraining;
 
 /**
  * Web part added to application to prevent main thread stopping before parallel Flux work finished.
@@ -16,11 +17,18 @@ import reactor.core.publisher.Mono;
 @Configuration( proxyBeanMethods = false )
 public class ApplicationRouter {
 
+    private final JacksonTraining jacksonTraining;
+
+    public ApplicationRouter( JacksonTraining jacksonTraining ) {
+        this.jacksonTraining = jacksonTraining;
+    }
+
     @Bean
     public RouterFunction<ServerResponse> route() {
         return RouterFunctions
                 .route()
                 .GET( "/isAlive", this::isAlive )
+                .GET( "/runJackson", this::runJackson )
                 .build();
     }
 
@@ -28,5 +36,12 @@ public class ApplicationRouter {
         return ServerResponse.ok()
                 .contentType( MediaType.APPLICATION_JSON )
                 .body( BodyInserters.fromValue( "I'm alive" ) );
+    }
+
+    private Mono<ServerResponse> runJackson( ServerRequest serverRequest ) {
+        jacksonTraining.run();
+        return ServerResponse.ok()
+                .contentType( MediaType.APPLICATION_JSON )
+                .body( BodyInserters.fromValue( "Jackson execution started" ) );
     }
 }
